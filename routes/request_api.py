@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from flask import jsonify, abort, request, Blueprint
 from models import categories 
 from validate_email import validate_email
-
+from dbc import db
 import json
 from json import JSONEncoder
 
@@ -36,7 +36,6 @@ def get_records():
     """ 
     result = []
     catList = categories.Categories.query.all()
-    print(catList)
     for data in catList :
         result.append({'id': data.id, 'name':data.name, 'description':data.description, 'parent category id':data.parent_id})
     return jsonify(result)
@@ -49,11 +48,12 @@ def get_record_by_id(_id):
     with application/json mimetype.
     @raise 404: if book request not found
     """
-    if _id not in BOOK_REQUESTS:
-        abort(404)
-    return jsonify(BOOK_REQUESTS[_id])
-
-
+    result = []
+    catList = categories.Categories.query.filter_by(id = _id)
+    for data in catList :
+        result.append({'id': data.id, 'name':data.name, 'description':data.description, 'parent category id':data.parent_id})
+    return jsonify(result)
+ 
 @REQUEST_API.route('/request', methods=['POST'])
 def create_record():
     """Create a book request record
@@ -125,9 +125,6 @@ def delete_record(_id):
     @return: 204: an empty payload.
     @raise 404: if book request not found
     """
-    if _id not in BOOK_REQUESTS:
-        abort(404)
-
-    del BOOK_REQUESTS[_id]
-
+    catList = categories.Categories.query.filter_by(id = _id).delete()
+    db.session.commit()
     return '', 204
