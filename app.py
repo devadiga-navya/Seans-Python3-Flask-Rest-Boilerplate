@@ -1,13 +1,11 @@
-"""A Python Flask REST API BoilerPlate (CRUD) Style"""
-
 import argparse
 import os
 from flask import Flask, jsonify, make_response
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
-from routes import request_api
-
-app = Flask(__name__)
+from routes import request_api 
+from dbc import app
+"""A Python Flask REST API BoilerPlate (CRUD) Style"""
 
 ### swagger specific ###
 SWAGGER_URL = '/swagger'

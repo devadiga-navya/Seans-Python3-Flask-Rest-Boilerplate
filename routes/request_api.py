@@ -2,15 +2,17 @@
 import uuid
 from datetime import datetime, timedelta
 from flask import jsonify, abort, request, Blueprint
-
+from models import categories 
 from validate_email import validate_email
-REQUEST_API = Blueprint('request_api', __name__)
 
+import json
+from json import JSONEncoder
+
+REQUEST_API = Blueprint('request_api', __name__)
 
 def get_blueprint():
     """Return the blueprint for the main app module"""
     return REQUEST_API
-
 
 BOOK_REQUESTS = {
     "8c36e86c-13b9-4102-a44f-646015dfd981": {
@@ -31,9 +33,13 @@ def get_records():
     """Return all book requests
     @return: 200: an array of all known BOOK_REQUESTS as a \
     flask/response object with application/json mimetype.
-    """
-    return jsonify(BOOK_REQUESTS)
-
+    """ 
+    result = []
+    catList = categories.Categories.query.all()
+    print(catList)
+    for data in catList :
+        result.append({'id': data.id, 'name':data.name, 'description':data.description, 'parent category id':data.parent_id})
+    return jsonify(result)
 
 @REQUEST_API.route('/request/<string:_id>', methods=['GET'])
 def get_record_by_id(_id):
